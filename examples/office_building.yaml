@@ -1,0 +1,58 @@
+# Example device map: a small office building's Modbus TCP field devices.
+#
+# Scaled integer values are the industrial norm (a register is 16 bits, so 25.0 C is stored
+# as 250). The server refreshes every generator-backed register once per second, so reads
+# taken a second apart show live, changing data.
+#
+#   conda run -n p2 python -m modbus_sim serve --config examples/office_building.yaml
+#   conda run -n p2 python -m modbus_sim read-input --unit 1 --addr 0 --count 3 --watch 1
+
+devices:
+  # ---- Unit 1: outdoor temperature / humidity / pressure sensor ---------------------
+  - unit_id: 1
+    name: temp_sensor
+    discrete_inputs:
+      size: 4
+      init: [1, 0, 0, 0]        # bit0 = sensor healthy
+    holding_registers:
+      size: 4
+      init: [250, 0, 0, 0]      # [0] setpoint 25.0 C (x10), writable by clients
+    input_registers:
+      size: 4
+      generators:
+        - {addr: 0, fn: sine,        args: {mean: 250, amp: 40, period_s: 60}}   # temperature 25.0 C +/- 4.0
+        - {addr: 1, fn: random_walk, args: {start: 550, step: 3, min: 300, max: 800, seed: 1}}  # humidity 55.0 %
+        - {addr: 2, fn: constant,    args: {value: 1013}}                        # pressure 1013 hPa
+
+  # ---- Unit 2: three-phase power meter ---------------------------------------------
+  - unit_id: 2
+    name: power_meter
+    holding_registers:
+      size: 2
+      init: [0, 0]
+    input_registers:
+      size: 6
+      generators:
+        - {addr: 0, fn: sine,        args: {mean: 2300, amp: 15, period_s: 30}}  # voltage 230.0 V (x10)
+        - {addr: 1, fn: random_walk, args: {start: 120, step: 4, min: 0, max: 600, seed: 2}}   # current 12.0 A (x10)
+        - {addr: 2, fn: random_walk, args: {start: 2600, step: 25, min: 0, max: 9000, seed: 3}}  # active power (W)
+        - {addr: 3, fn: sine,        args: {mean: 500, amp: 2, period_s: 45}}    # frequency 50.0 Hz (x10)
+
+  # ---- Unit 3: variable-frequency drive (VFD) --------------------------------------
+  - unit_id: 3
+    name: vfd
+    coils:
+      size: 4
+      init: [1, 0, 0, 0]        # coil0 = run command, writable by clients
+    discrete_inputs:
+      size: 4
+      init: [1, 0, 0, 0]        # bit0 = drive ready
+    holding_registers:
+      size: 4
+      init: [1500, 0, 0, 0]     # [0] target speed (RPM), writable by clients
+    input_registers:
+      size: 4
+      generators:
+        - {addr: 0, fn: sine,     args: {mean: 1500, amp: 60, period_s: 20}}     # actual speed (RPM)
+        - {addr: 1, fn: sine,     args: {mean: 420, amp: 30, period_s: 90}}      # motor temperature 42.0 C (x10)
+        - {addr: 2, fn: constant, args: {value: 0}}                              # fault code (0 = OK)
