@@ -206,6 +206,7 @@ def _log_request(
 
 def configure_logging(level: str | int = "INFO") -> None:
     """Install a single-line UTC log handler on the ``modbus_sim`` logger tree (SPEC §7)."""
+    logging.addLevelName(logging.WARNING, "WARN")  # match the SPEC §7 sample exactly
     handler = logging.StreamHandler()
     formatter = logging.Formatter(
         fmt="%(asctime)s %(levelname)s %(message)s",
