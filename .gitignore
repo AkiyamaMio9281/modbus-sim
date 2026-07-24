@@ -1,0 +1,30 @@
+# ---- 私有规划文档（不发布到 GitHub）----
+CLAUDE.md
+SPEC.md
+PLAN.md
+HUMAN_TASKS.md
+RESULTS.md
+INTERVIEW_PREP.md
+项目设计文档.md
+
+# ---- 密钥 ----
+.env
+*.env
+
+# ---- Python ----
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# ---- 其他 ----
+*.log
+.DS_Store

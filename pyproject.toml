@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modbus-sim"
+version = "0.1.0"
+description = "From-scratch Modbus TCP device simulator and client CLI (no protocol library in the core)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "modbus-sim contributors" }]
+keywords = ["modbus", "modbus-tcp", "industrial", "simulator", "asyncio"]
+dependencies = [
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.0",
+    "ruff>=0.5",
+    "pymodbus>=3.6",
+]
+
+[project.scripts]
+modbus-sim = "modbus_sim.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["modbus_sim*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W", "C4", "SIM"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["error::DeprecationWarning:modbus_sim.*"]
+
+[tool.coverage.run]
+source = ["modbus_sim"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
