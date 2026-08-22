@@ -1,11 +1,8 @@
-# ---- 私有规划文档（不发布到 GitHub）----
+# ---- internal dev notes (not published) ----
 CLAUDE.md
 SPEC.md
 PLAN.md
-HUMAN_TASKS.md
 RESULTS.md
-INTERVIEW_PREP.md
-项目设计文档.md
 
 # ---- 密钥 ----
 .env
